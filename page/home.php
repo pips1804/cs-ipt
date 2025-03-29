@@ -1,71 +1,89 @@
 <?php
-require '../vendor/autoload.php';
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
+include_once("../auth/jwt-auth.php");
+include '../config/db_connect.php';
 
-$key = "4d3c2b1a5f6e7d8c9b0a1e2f3d4c5b6a7e8d9c0b1a2f3e4d5c6b7a8d9c0e1f2"; // Your secret key
+// Fetch categories
+$categoryQuery = "SELECT * FROM categories";
+$categoryResult = $conn->query($categoryQuery);
 
-// Logout handler
-if (isset($_GET['logout'])) {
-    setcookie("jwt", "", time() - 3600, "/", "", false, true); // Destroy cookie
-    header("Location: ../index.php");
-    exit();
-}
-
-// Check if JWT cookie exists
-if (!isset($_COOKIE['jwt']) || empty($_COOKIE['jwt'])) {
-    header("Location: ../index.php");
-    exit();
-}
-
-$token = $_COOKIE['jwt'];
-
-try {
-    // Decode the JWT
-    $decoded = JWT::decode($token, new Key($key, 'HS256'));
-
-    // Check expiration
-    if ($decoded->exp < time()) {
-        setcookie("jwt", "", time() - 3600, "/", "", false, true); // Delete expired token
-        header("Location: ../index.php");
-        exit();
-    }
-
-    // Extract user email
-    $user_email = $decoded->email;
-} catch (Exception $e) {
-    // If decoding fails, redirect to login
-    setcookie("jwt", "", time() - 3600, "/", "", false, true); // Remove invalid token
-    header("Location: ../index.php");
-    exit();
-}
+// Fetch products
+$productQuery = "SELECT * FROM products";
+$productResult = $conn->query($productQuery);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet" href="../assets/bootstrap.min.css">
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-    </style>
+    <title>Product Inventory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
 
-    <h2>Welcome to Home Page</h2>
-    <p><strong>Email:</strong> <?php echo htmlspecialchars($user_email); ?></p>
-    <p><strong>JWT Token:</strong></p>
-    <pre><?php echo htmlspecialchars($token); ?></pre>
+<body class="bg-light">
 
-    <a href="home.php?logout=true" class="btn btn-danger">Logout</a>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Product Inventory</h2>
+
+        <!-- Search Bar -->
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
+        </div>
+
+        <!-- Category Buttons -->
+        <div class="d-flex justify-content-center mb-3">
+            <button class="btn btn-secondary me-2 category-btn" data-category="all">All</button>
+            <?php while ($category = $categoryResult->fetch_assoc()): ?>
+                <button class="btn btn-outline-primary me-2 category-btn" data-category="<?= $category['cat_id']; ?>">
+                    <?= $category['name']; ?>
+                </button>
+            <?php endwhile; ?>
+        </div>
+
+        <!-- Product List -->
+        <div class="row" id="productList">
+            <?php while ($product = $productResult->fetch_assoc()): ?>
+                <div class="col-md-4 mb-4 product-item" data-category="<?= $product['cat_id']; ?>">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= $product['name']; ?></h5>
+                            <p class="card-text"><?= $product['description']; ?></p>
+                            <p class="text-muted">Price: $<?= number_format($product['price'], 2); ?></p>
+                            <p class="text-muted">Stock: <?= $product['stock_quantity']; ?></p>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Search Functionality
+            $("#searchInput").on("keyup", function() {
+                let value = $(this).val().toLowerCase();
+                $(".product-item").each(function() {
+                    let productName = $(this).find(".card-title").text().toLowerCase();
+                    $(this).toggle(productName.includes(value));
+                });
+            });
+
+            // Category Filter
+            $(".category-btn").on("click", function() {
+                let category = $(this).data("category");
+                if (category === "all") {
+                    $(".product-item").show();
+                } else {
+                    $(".product-item").each(function() {
+                        $(this).toggle($(this).data("category") == category);
+                    });
+                }
+            });
+        });
+    </script>
 
 </body>
+
 </html>
