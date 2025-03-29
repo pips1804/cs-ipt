@@ -14,7 +14,6 @@
             /* Hide placeholder when typing */
         }
     </style>
-
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100">
@@ -52,6 +51,27 @@
                 sessionStorage.removeItem("password"); // Clear after setting
             }
         }
+
+        document.querySelector("form").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(this);
+    const response = await fetch("controllers/login.php", {
+        method: "POST",
+        body: formData,
+        credentials: "same-origin" // Ensure cookies are sent
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+        alert("Login successful!");
+        window.location.href = "page/home.php"; // Redirect after login
+    } else {
+        alert("Login failed: " + data.error); // Show specific error
+    }
+});
+
     </script>
     <script src="./assets/bootstrap.min.js"></script>
 
