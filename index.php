@@ -52,26 +52,25 @@
             }
         }
 
-        document.querySelector("form").addEventListener("submit", async function (event) {
-    event.preventDefault();
+        document.querySelector("form").addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-    const formData = new FormData(this);
-    const response = await fetch("controllers/login.php", {
-        method: "POST",
-        body: formData,
-        credentials: "same-origin" // Ensure cookies are sent
-    });
+            const formData = new FormData(this);
+            const response = await fetch("controllers/login.php", {
+                method: "POST",
+                body: formData,
+                credentials: "same-origin" // Ensure cookies are sent
+            });
 
-    const data = await response.json();
-    
-    if (data.success) {
-        alert("Login successful!");
-        window.location.href = "page/home.php"; // Redirect after login
-    } else {
-        alert("Login failed: " + data.error); // Show specific error
-    }
-});
+            const data = await response.json();
 
+            if (data.success) {
+                alert("Login successful!");
+                window.location.href = "page/home.php"; // Redirect after login
+            } else {
+                alert("Login failed: " + data.error); // Show specific error
+            }
+        });
     </script>
     <script src="./assets/bootstrap.min.js"></script>
 

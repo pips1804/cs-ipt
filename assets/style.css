@@ -1,115 +1,33 @@
-body {
-  background-color: #303841 !important;
-}
-* {
-  color: #eeeeee !important;
-  font-family: Inter, sans-serif;
-}
-
-.btn {
-  background-color: #00adb5 !important;
-}
-
-.card {
-  background-color: #3a4750 !important;
-}
-
-.sticky-title {
-  position: sticky;
+/* Sidebar Styles */
+.sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
   top: 0;
-  background: white;
-  z-index: 10;
-  padding: 10px 0;
-  background-color: #303841 !important;
+  left: 0;
+  background: #343a40;
+  padding-top: 20px;
+  transition: 0.3s;
 }
 
-table {
-  color: #303841 !important;
-}
-.modal-content {
-  background-color: #303841 !important;
-}
-
-.form-control::placeholder {
-  /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: #eeeeee !important;
-  opacity: 1; /* Firefox */
-}
-
-.form-control:-ms-input-placeholder {
-  /* Internet Explorer 10-11 */
-  color: #eeeeee !important;
-}
-
-.form-control::-ms-input-placeholder {
-  /* Microsoft Edge */
-  color: #eeeeee !important;
-}
-
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #eeeeee;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #00adb5;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: darkcyan;
-}
-
-.title {
-  font-size: 54px;
-  font-weight: 600;
-}
-
-.text {
-  color: #eeeeee;
-}
-
-.sticky-header th {
-  position: sticky;
-  top: 0;
-  background: #343a40; /* Match table-dark background */
-  z-index: 100;
-}
-
-.yellow-stock {
-  color: yellow !important;
-  font-weight: bold !important;
-}
-
-.red-stock {
-  color: red !important;
-  font-weight: bold !important;
-}
-
-.quantity-input {
-  background-color: #343a40 !important;
-}
-
-.quantity-input:focus {
-  background-color: #343a40 !important; /* Prevent Bootstrap override */
+.sidebar a {
+  padding: 15px;
+  text-decoration: none;
+  font-size: 18px;
   color: white;
-  border: 1px solid white; /* Keep the border the same */
-  box-shadow: none; /* Remove default Bootstrap blue outline */
+  display: block;
+  transition: 0.3s;
 }
 
-.custom-spinner {
-  border-color: #00adb5 !important; /* Changes spinner color */
-  border-right-color: transparent !important; /* Keeps the spinning effect */
+.sidebar a:hover {
+  background: #495057;
 }
 
-.form-floating label {
-  background-color: transparent !important;
-  color: #eeeeee !important;
-  opacity: 0.7 !important;
+.sidebar .active {
+  background: #007bff;
+}
+
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
 }

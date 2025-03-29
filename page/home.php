@@ -1,14 +1,5 @@
 <?php
 include_once("../auth/jwt-auth.php");
-include '../config/db_connect.php';
-
-// Fetch categories
-$categoryQuery = "SELECT * FROM categories";
-$categoryResult = $conn->query($categoryQuery);
-
-// Fetch products
-$productQuery = "SELECT * FROM products";
-$productResult = $conn->query($productQuery);
 ?>
 
 <!DOCTYPE html>
@@ -17,73 +8,43 @@ $productResult = $conn->query($productQuery);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Inventory</title>
+    <title>Inventory System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="../assets/style.css">
 </head>
 
 <body class="bg-light">
 
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Product Inventory</h2>
-
-        <!-- Search Bar -->
-        <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search for products...">
-        </div>
-
-        <!-- Category Buttons -->
-        <div class="d-flex justify-content-center mb-3">
-            <button class="btn btn-secondary me-2 category-btn" data-category="all">All</button>
-            <?php while ($category = $categoryResult->fetch_assoc()): ?>
-                <button class="btn btn-outline-primary me-2 category-btn" data-category="<?= $category['cat_id']; ?>">
-                    <?= $category['name']; ?>
-                </button>
-            <?php endwhile; ?>
-        </div>
-
-        <!-- Product List -->
-        <div class="row" id="productList">
-            <?php while ($product = $productResult->fetch_assoc()): ?>
-                <div class="col-md-4 mb-4 product-item" data-category="<?= $product['cat_id']; ?>">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title"><?= $product['name']; ?></h5>
-                            <p class="card-text"><?= $product['description']; ?></p>
-                            <p class="text-muted">Price: $<?= number_format($product['price'], 2); ?></p>
-                            <p class="text-muted">Stock: <?= $product['stock_quantity']; ?></p>
-                        </div>
-                    </div>
-                </div>
-            <?php endwhile; ?>
-        </div>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <a href="home.php?page=dashboard">Dashboard</a>
+        <a href="home.php?page=products">Products</a>
+        <a href="home.php?page=transactions">Transactions</a>
+        <a href="home.php?page=reports">Reports</a>
     </div>
 
-    <script>
-        $(document).ready(function() {
-            // Search Functionality
-            $("#searchInput").on("keyup", function() {
-                let value = $(this).val().toLowerCase();
-                $(".product-item").each(function() {
-                    let productName = $(this).find(".card-title").text().toLowerCase();
-                    $(this).toggle(productName.includes(value));
-                });
-            });
+    <!-- Main Content -->
+    <div class="main-content">
+        <?php
+        // Dynamic page loading
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+            $allowed_pages = ['dashboard', 'products', 'transactions', 'reports'];
 
-            // Category Filter
-            $(".category-btn").on("click", function() {
-                let category = $(this).data("category");
-                if (category === "all") {
-                    $(".product-item").show();
-                } else {
-                    $(".product-item").each(function() {
-                        $(this).toggle($(this).data("category") == category);
-                    });
-                }
-            });
-        });
-    </script>
+            if (in_array($page, $allowed_pages)) {
+                include("$page.php");
+            } else {
+                echo "<h2>Page Not Found</h2>";
+            }
+        } else {
+            include("dashboard.php"); // Default page
+        }
+        ?>
+    </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/script.js"></script>
 </body>
 
 </html>
