@@ -10,17 +10,17 @@ include_once("../auth/jwt-auth.php");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/style/style.css">
 </head>
 
 <body class="bg-light">
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <a href="home.php?page=dashboard">Dashboard</a>
-        <a href="home.php?page=products">Products</a>
-        <a href="home.php?page=transactions">Transactions</a>
-        <a href="home.php?page=reports">Reports</a>
+        <a href="home.php?page=dashboard"><i class="fa-solid fa-chart-simple"></i>Dashboard</a>
+        <a href="home.php?page=products"><i class="fa-solid fa-box-archive"></i>Products</a>
+        <a href="home.php?page=transactions"><i class="fa-solid fa-arrows-turn-to-dots"></i>Transactions</a>
+        <a href="home.php?page=reports"> <i class="fa-solid fa-book-open"></i>Reports</a>
     </div>
 
     <!-- Main Content -->
@@ -44,7 +44,9 @@ include_once("../auth/jwt-auth.php");
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/script.js"></script>
+    <script src="https://kit.fontawesome.com/dd50fcb824.js" crossorigin="anonymous"></script>
+    <script src="../assets/script/script.js" defer></script>
+    <script src="../assets/script/product.js" defer></script>
 </body>
 
 </html>

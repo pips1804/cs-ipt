@@ -21,18 +21,35 @@ $productResult = $conn->query($productQuery);
     <!-- Search & Add Product -->
     <div class="d-flex justify-content-between mb-3">
         <input type="text" id="searchInput" class="form-control w-50" placeholder="Search products...">
-        <button class="btn btn-success px-4" id="addProductBtn">+ New Product</button>
+        <button class="btn btn-success " id="addProductBtn">New Product</button>
     </div>
 
     <!-- Category Filter Buttons -->
-    <div class="mb-3">
-        <button class="btn btn-secondary me-2 category-btn" data-category="all">All</button>
-        <?php foreach ($categories as $category): ?>
-            <button class="btn btn-outline-primary me-2 category-btn" data-category="<?= $category['cat_id']; ?>">
-                <?= $category['name']; ?>
-            </button>
-        <?php endforeach; ?>
+    <!-- Category Filter Buttons -->
+    <div class="dropdown mb-3">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Category
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
+            <li><button class="dropdown-item category-btn" data-category="all">All</button></li>
+            <?php foreach ($categories as $category): ?>
+                <li class="d-flex justify-content-between align-items-center px-2">
+                    <button class="dropdown-item category-btn flex-grow-1 text-start" data-category="<?= $category['cat_id']; ?>">
+                        <?= $category['name']; ?>
+                    </button>
+                    <button class="btn btn-sm text-danger delete-category border-0 ms-2" data-id="<?= $category['cat_id']; ?>" style="background: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <button class="btn btn-primary " id="addCategoryBtn">New Category</button>
     </div>
+
+
+
+
+
 
     <!-- Product List -->
     <div class="list-group" id="productList" style="max-height: 600px; overflow-y: auto; border: 1px solid #ddd; padding: 20px;">
@@ -111,116 +128,22 @@ $productResult = $conn->query($productQuery);
     </div>
 </div>
 
-<script>
-    $(document).ready(function() {
-        // Search Functionality
-        $("#searchInput").on("keyup", function() {
-            let value = $(this).val().toLowerCase();
-            $(".product-item").each(function() {
-                let found = $(this).text().toLowerCase().includes(value);
-                $(this).toggle(found);
-            });
-        });
-
-        // Category Filter
-        $(document).on("click", ".category-btn", function() {
-            let category = $(this).data("category");
-            $(".category-btn").removeClass("btn-secondary").addClass("btn-outline-primary");
-            $(this).removeClass("btn-outline-primary").addClass("btn-secondary");
-
-            if (category === "all") {
-                $(".product-item").show();
-            } else {
-                $(".product-item").each(function() {
-                    $(this).toggle($(this).data("category") == category);
-                });
-            }
-        });
-
-        // Show modal for adding a new product
-        $(document).on("click", "#addProductBtn", function() {
-            $("#productForm")[0].reset();
-            $("#productId").val("");
-            $("#productModalLabel").text("Add Product");
-            $("#productModal").modal("show");
-        });
-
-        // Show modal for editing a product
-        $(document).on("click", ".edit-btn", function() {
-            $("#productId").val($(this).data("id"));
-            $("#productName").val($(this).data("name"));
-            $("#productDescription").val($(this).data("description"));
-            $("#productStock").val($(this).data("stock"));
-            $("#productPrice").val($(this).data("price"));
-            $("#productCategory").val($(this).data("category"));
-            $("#productModalLabel").text("Edit Product");
-            $("#productModal").modal("show");
-        });
-
-        // Handle form submission (Add/Edit Product)
-        $("#productForm").submit(function(event) {
-            event.preventDefault();
-
-            let formData = $(this).serialize();
-            let actionUrl = $("#productId").val() ? "../controllers/update_product.php" : "../controllers/add_product.php";
-
-            $.post(actionUrl, formData, function(response) {
-                console.log("Response from server:", response); // Debugging log
-                $("#productModal").modal("hide");
-                $("#productForm")[0].reset();
-                fetchProducts();
-            });
-        });
-
-        // Delete product
-        $(document).on("click", ".delete-btn", function() {
-            let productId = $(this).data("id");
-
-            if (confirm("Are you sure you want to delete this product?")) {
-                $.post("../controllers/delete_product.php", {
-                    id: productId
-                }, function(response) {
-                    alert(response);
-                    fetchProducts();
-                });
-            }
-        });
-
-        // Fetch updated product list
-        function fetchProducts() {
-            $.get("../controllers/get_products.php", function(data) {
-                console.log("Fetched Products:", data);
-                $("#productList").html(data);
-            });
-        }
-    });
-
-
-    function attachEventListeners() {
-        $(document).off("click", ".edit-btn").on("click", ".edit-btn", function() {
-            $("#productId").val($(this).data("id"));
-            $("#productName").val($(this).data("name"));
-            $("#productDescription").val($(this).data("description"));
-            $("#productStock").val($(this).data("stock"));
-            $("#productPrice").val($(this).data("price"));
-            $("#productCategory").val($(this).data("category"));
-            $("#productModalLabel").text("Edit Product");
-            $("#productModal").modal("show");
-        });
-
-        $(document).off("click", ".delete-btn").on("click", ".delete-btn", function() {
-            let productId = $(this).data("id");
-            if (confirm("Are you sure you want to delete this product?")) {
-                $.post("../controllers/delete_product.php", {
-                    id: productId
-                }, function(response) {
-                    alert(response);
-                    fetchProducts();
-                });
-            }
-        });
-    }
-
-    // Initial event listener attachment
-    attachEventListeners();
-</script>
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="categoryName" name="category_name" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
     <link rel="stylesheet" href="./assets/style.css">
-    <link rel="stylesheet" href="./assets/bootstrap.min.css">
+    <link rel="stylesheet" href="./assets/style/bootstrap.min.css">
     <style>
         input:focus::placeholder,
         input:not(:placeholder-shown)::placeholder {
@@ -24,14 +24,12 @@
         <form method="post" action="controllers/login.php" onsubmit="savePassword()">
             <div class="form-floating mb-3">
                 <input type="email" class="form-control"
-                    id="floatingInput" placeholder="Email address" required name="email"
-                    style="background-color: #303841 !important; color: #EEEEEE;">
+                    id="floatingInput" placeholder="Email address" required name="email">
                 <label for="floatingInput">Email address</label>
             </div>
             <div class="form-floating mb-3">
                 <input type="password" class="form-control "
-                    id="floatingPassword" placeholder="Password" required name="password"
-                    style="background-color: #303841 !important; color: #EEEEEE;">
+                    id="floatingPassword" placeholder="Password" required name="password">
                 <label for="floatingPassword">Password</label>
             </div>
             <button type="submit" class="btn btn-primary w-100" name="login">Login</button>
@@ -72,7 +70,7 @@
             }
         });
     </script>
-    <script src="./assets/bootstrap.min.js"></script>
+    <script src="./assets/script/bootstrap.min.js"></script>
 
 
 
