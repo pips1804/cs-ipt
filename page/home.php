@@ -8,6 +8,9 @@ include_once("../auth/jwt-auth.php");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Inventory System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style/style.css">
@@ -17,22 +20,22 @@ include_once("../auth/jwt-auth.php");
 
     <!-- Sidebar Navigation -->
     <div class="sidebar">
-        <a href="home.php?page=dashboard"><i class="fa-solid fa-chart-simple"></i>Dashboard</a>
-        <a href="home.php?page=products"><i class="fa-solid fa-box-archive"></i>Products</a>
-        <a href="home.php?page=transactions"><i class="fa-solid fa-arrows-turn-to-dots"></i>Transactions</a>
-        <a href="home.php?page=reports"> <i class="fa-solid fa-book-open"></i>Reports</a>
+        <a href="home.php?page=dashboard" class="<?= (isset($_GET['page']) && $_GET['page'] == 'dashboard') ? 'active' : '' ?>"><i class="fa-solid fa-chart-simple"></i>Dashboard</a>
+        <a href="home.php?page=products" class="<?= (isset($_GET['page']) && $_GET['page'] == 'products') ? 'active' : '' ?>"><i class="fa-solid fa-box-archive"></i>Products</a>
+        <a href="home.php?page=transactions" class="<?= (isset($_GET['page']) && $_GET['page'] == 'transactions') ? 'active' : '' ?>"><i class="fa-solid fa-arrows-turn-to-dots"></i>Transactions</a>
+        <a href="home.php?page=reports" class="<?= (isset($_GET['page']) && $_GET['page'] == 'reports') ? 'active' : '' ?>"><i class="fa-solid fa-book-open"></i>Reports</a>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <?php
-        // Dynamic page loading
+        // Dynamic page loading based on the URL parameter
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
             $allowed_pages = ['dashboard', 'products', 'transactions', 'reports'];
 
             if (in_array($page, $allowed_pages)) {
-                include("$page.php");
+                include("$page.php"); // Only load the allowed pages
             } else {
                 echo "<h2>Page Not Found</h2>";
             }

@@ -1,149 +1,86 @@
 <?php
-include '../config/db_connect.php';
+$apiUrl = "http://localhost:5000/api/products";
+$response = file_get_contents($apiUrl);
+$products = json_decode($response, true);
 
-// Fetch categories once and store them in an array
-$categoryQuery = "SELECT * FROM categories";
-$categoryResult = $conn->query($categoryQuery);
-
-$categories = [];
-while ($category = $categoryResult->fetch_assoc()) {
-    $categories[] = $category; // Store each category in an array
+if (!$products) {
+    echo "Failed to fetch or decode products.";
+    exit;
 }
-
-// Fetch products
-$productQuery = "SELECT * FROM products";
-$productResult = $conn->query($productQuery);
 ?>
 
-<div class="container mt-4">
-    <h2 class="mb-4">Product Inventory</h2>
+<div class="container mt-5">
+    <h2 class="mb-4">PRODUCTS</h2>
 
-    <!-- Search & Add Product -->
-    <div class="d-flex justify-content-between mb-3">
-        <input type="text" id="searchInput" class="form-control w-50" placeholder="Search products...">
-        <button class="btn btn-success " id="addProductBtn">New Product</button>
+    <!-- Search Bar -->
+    <div class="mb-3">
+        <input type="text" id="search" class="form-control" placeholder="Search Products..." onkeyup="filterProducts()">
     </div>
 
-    <!-- Category Filter Buttons -->
-    <!-- Category Filter Buttons -->
-    <div class="dropdown mb-3">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="categoryDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-            Select Category
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="categoryDropdown">
-            <li><button class="dropdown-item category-btn" data-category="all">All</button></li>
-            <?php foreach ($categories as $category): ?>
-                <li class="d-flex justify-content-between align-items-center px-2">
-                    <button class="dropdown-item category-btn flex-grow-1 text-start" data-category="<?= $category['cat_id']; ?>">
-                        <?= $category['name']; ?>
-                    </button>
-                    <button class="btn btn-sm text-danger delete-category border-0 ms-2" data-id="<?= $category['cat_id']; ?>" style="background: none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-        <button class="btn btn-primary " id="addCategoryBtn">New Category</button>
+    <!-- Add Product Button -->
+    <div class="mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">Add Product</button>
     </div>
-
-
-
-
-
 
     <!-- Product List -->
-    <div class="list-group" id="productList" style="max-height: 600px; overflow-y: auto; border: 1px solid #ddd; padding: 20px;">
-        <?php while ($product = $productResult->fetch_assoc()): ?>
-            <div class="list-group-item p-4 mb-3 shadow-sm rounded product-item" data-category="<?= $product['cat_id']; ?>">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h5 class="mb-1"><?= $product['name']; ?></h5>
-                        <p class="mb-1 text-muted"><?= $product['description']; ?></p>
-                        <small class="text-secondary">
-                            Stock: <?= $product['stock_quantity']; ?> |
-                            Price: $<?= number_format($product['price'], 2); ?>
-                        </small>
-                    </div>
-                    <div>
-                        <button class="btn btn-warning btn-sm me-2 edit-btn"
-                            data-id="<?= $product['prod_id']; ?>"
-                            data-name="<?= $product['name']; ?>"
-                            data-description="<?= $product['description']; ?>"
-                            data-stock="<?= $product['stock_quantity']; ?>"
-                            data-price="<?= $product['price']; ?>"
-                            data-category="<?= $product['cat_id']; ?>">Edit</button>
+    <div class="row" id="product-list">
+        <?php foreach ($products as $product): ?>
+            <div class="col-md-4 mb-4 product-item">
+                <div class="card h-100 shadow-sm">
+                    <?php if (!empty($product['imageFullURL'])): ?>
+                        <img src="<?= htmlspecialchars($product['imageFullURL']) ?>" class="card-img-top product-img" alt="Product Image">
+                    <?php else: ?>
+                        <img src="https://via.placeholder.com/150" class="card-img-top product-img" alt="No Image">
+                    <?php endif; ?>
+                    <div class="card-body">
+                        <h5 class="card-title"><?= htmlspecialchars($product['itemName']) ?></h5>
+                        <p class="card-text"><?= htmlspecialchars($product['description']) ?></p>
+                        <p class="card-text"><small>Stock: <?= $product['stock'] ?> | Price: ₱<?= number_format($product['unitPrice'], 2) ?></small></p>
 
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="<?= $product['prod_id']; ?>">Delete</button>
+                        <!-- Delete Button -->
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteProduct(<?= $product['productID'] ?>)">Delete</button>
                     </div>
                 </div>
             </div>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
     </div>
 </div>
 
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Add Product</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="productForm">
-                    <input type="hidden" id="productId" name="productId">
+<script>
+// Search function
+function filterProducts() {
+    let input = document.getElementById('search');
+    let filter = input.value.toLowerCase();
+    let productList = document.getElementById('product-list');
+    let products = productList.getElementsByClassName('product-item');
 
-                    <div class="mb-3">
-                        <label for="productName" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="productName" name="name" required>
-                    </div>
+    for (let i = 0; i < products.length; i++) {
+        let productName = products[i].getElementsByClassName('card-title')[0].textContent;
+        if (productName.toLowerCase().indexOf(filter) > -1) {
+            products[i].style.display = "";
+        } else {
+            products[i].style.display = "none";
+        }
+    }
+}
 
-                    <div class="mb-3">
-                        <label for="productDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="productDescription" name="description" required></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="productStock" class="form-label">Stock Quantity</label>
-                        <input type="number" class="form-control" id="productStock" name="stock_quantity" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="productPrice" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="productPrice" name="price" step="0.01" min="0" required>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="productCategory" class="form-label">Category</label>
-                        <select class="form-control" id="productCategory" name="category_id" required>
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?= $category['cat_id']; ?>"><?= $category['name']; ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Save Product</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="categoryForm">
-                    <div class="mb-3">
-                        <label for="categoryName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="categoryName" name="category_name" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Save Category</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+// Function to handle the delete button
+function deleteProduct(productId) {
+    if (confirm("Are you sure you want to delete this product?")) {
+        fetch(`http://localhost:5000/api/products/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.message.includes("deleted")) {
+                location.reload(); // Reload the page to reflect the changes
+            }
+        })
+        .catch(error => {
+            alert('Error deleting product.');
+            console.error(error);
+        });
+    }
+}
+</script>
