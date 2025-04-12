@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 29, 2025 at 07:10 AM
+-- Generation Time: Apr 12, 2025 at 11:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -55,12 +55,20 @@ CREATE TABLE `products` (
 --
 
 CREATE TABLE `transactions` (
-  `transact_id` int(11) NOT NULL,
-  `prod_id` int(11) NOT NULL,
-  `type` tinyint(1) NOT NULL CHECK (`type` in (0,1)),
-  `quantity` int(11) NOT NULL,
-  `date` timestamp NOT NULL DEFAULT current_timestamp()
+  `transact_ID` int(10) NOT NULL,
+  `user` varchar(255) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `timestamp` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `transactions`
+--
+
+INSERT INTO `transactions` (`transact_ID`, `user`, `action`, `description`, `timestamp`) VALUES
+(3, 'admin@gmail.com', 'Edited product', 'Updated product ID: 55,\n                New Name: Hawk Bag,\n                New Description: Sheesh,\n                New Price: ₱999.00,\n                New Stock: 10', '2025-04-12 17:35:44'),
+(4, 'admin@gmail.com', 'Deleted product', 'Deleted product with ID: 55', '2025-04-12 17:51:06');
 
 -- --------------------------------------------------------
 
@@ -74,6 +82,13 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` tinyint(1) NOT NULL CHECK (`role` in (0,1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `username`, `password`, `role`) VALUES
+(1, 'admin@gmail.com', '$2y$10$hCmjZ0UPg.GiHwdRWEygVuQ7T7CiB/lV.GBAq41GOTFdt1edyophe', 0);
 
 --
 -- Indexes for dumped tables
@@ -96,8 +111,7 @@ ALTER TABLE `products`
 -- Indexes for table `transactions`
 --
 ALTER TABLE `transactions`
-  ADD PRIMARY KEY (`transact_id`),
-  ADD KEY `prod_id` (`prod_id`);
+  ADD PRIMARY KEY (`transact_ID`);
 
 --
 -- Indexes for table `users`
@@ -126,13 +140,13 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transact_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `transact_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables
@@ -143,12 +157,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `products`
   ADD CONSTRAINT `products_ibfk_1` FOREIGN KEY (`cat_id`) REFERENCES `categories` (`cat_id`) ON DELETE SET NULL;
-
---
--- Constraints for table `transactions`
---
-ALTER TABLE `transactions`
-  ADD CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`prod_id`) REFERENCES `products` (`prod_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
