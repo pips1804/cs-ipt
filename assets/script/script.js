@@ -10,15 +10,19 @@ $(document).ready(function () {
 
   // Handle sidebar update when clicking a link
   $(".sidebar a").click(function (e) {
+    const href = $(this).attr("href");
+
+    // Allow logout link to work normally
+    if (href.includes("../auth/jwt-auth.php?logout=true")) return;
+
     e.preventDefault(); // Prevent full page reload
 
-    let page = $(this).attr("href").split("=")[1]; // Extract page name from URL
-    window.history.pushState({}, "", "home.php?page=" + page); // Update URL
+    let page = href.split("=")[1];
+    window.history.pushState({}, "", "home.php?page=" + page);
 
     $(".sidebar a").removeClass("active");
     $(this).addClass("active");
 
-    // Load new content dynamically
     $(".main-content").load(page + ".php");
   });
 
@@ -66,6 +70,49 @@ function attachEventListeners() {
     }
   });
 }
+
+$(document).ready(function () {
+  // Handle sidebar update when clicking a link
+  $(".sidebar a").click(function (e) {
+    e.preventDefault(); // Prevent full page reload
+
+    // Show the loading overlay
+    $("#loadingOverlay").fadeIn();
+
+    // Extract page name and load it
+    let page = $(this).attr("href").split("=")[1]; // Extract page name from URL
+    $(".sidebar a").removeClass("active");
+    $(this).addClass("active");
+
+    // Clear content first to prevent flickering
+    $(".main-content").html("");
+
+    // Simulate loading (remove this part if actual page load is enough)
+    setTimeout(() => {
+      $(".main-content").load(page + ".php", function () {
+        // Hide the loading overlay once content is loaded
+        $("#loadingOverlay").fadeOut();
+      });
+    }, 500); // Optional delay for better visibility
+  });
+
+  // Handle back/forward navigation
+  window.onpopstate = function () {
+    let newPage =
+      new URLSearchParams(window.location.search).get("page") || "dashboard";
+    $(".sidebar a").removeClass("active");
+    $(".sidebar a[href='home.php?page=" + newPage + "']").addClass("active");
+    $(".main-content").html(""); // Clear content first to prevent flickering
+
+    // Simulate loading (remove if not needed)
+    setTimeout(() => {
+      $(".main-content").load(newPage + ".php", function () {
+        // Hide the loading overlay once content is loaded
+        $("#loadingOverlay").fadeOut();
+      });
+    }, 500); // Optional delay for better visibility
+  };
+});
 
 // Initial attachment when the page loads
 attachEventListeners();
