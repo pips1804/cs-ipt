@@ -70,7 +70,6 @@ include_once("../auth/jwt-auth.php");
         </div>
     </div>
 
-
     <!-- Sidebar Navigation -->
     <div class="sidebar d-flex flex-column justify-content-between">
         <div>
