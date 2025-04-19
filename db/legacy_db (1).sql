@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 12, 2025 at 11:52 AM
+-- Generation Time: Apr 19, 2025 at 04:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -68,7 +68,9 @@ CREATE TABLE `transactions` (
 
 INSERT INTO `transactions` (`transact_ID`, `user`, `action`, `description`, `timestamp`) VALUES
 (3, 'admin@gmail.com', 'Edited product', 'Updated product ID: 55,\n                New Name: Hawk Bag,\n                New Description: Sheesh,\n                New Price: ₱999.00,\n                New Stock: 10', '2025-04-12 17:35:44'),
-(4, 'admin@gmail.com', 'Deleted product', 'Deleted product with ID: 55', '2025-04-12 17:51:06');
+(4, 'admin@gmail.com', 'Deleted product', 'Deleted product with ID: 55', '2025-04-12 17:51:06'),
+(5, 'admin@gmail.com', 'Added product', 'Item Number: 15,\n                  Name: Hawk Bag,\n                  Description: aheeshkjahd,\n                  Price: ₱1000.00,\n                  Stock: 10,\n                  Discount: 1%, \n                  Status: active', '2025-04-14 10:54:39'),
+(6, 'admin@gmail.com', 'Deleted product', 'Deleted product with ID: 56', '2025-04-14 10:54:55');
 
 -- --------------------------------------------------------
 
@@ -140,7 +142,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `transact_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `transact_ID` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `users`
