@@ -46,26 +46,52 @@ if (!$products) {
     </div>
 
     <!-- Product List -->
-    <div class="row" id="product-list">
-        <?php foreach ($products as $product): ?>
-            <div class="col-md-4 mb-4 product-item">
-                <div class="card h-100 shadow-sm">
-                    <?php if (!empty($product['imageFullURL'])): ?>
-                        <img src="<?= htmlspecialchars($product['imageFullURL']) ?>" class="card-img-top product-img" alt="Product Image">
+<div class="row" id="product-list">
+    <?php foreach ($products as $product): ?>
+        <div class="col-md-4 mb-4 product-item">
+            <div class="card h-100 shadow-sm">
+                <?php if (!empty($product['imageFullURL'])): ?>
+                    <img src="<?= htmlspecialchars($product['imageFullURL']) ?>" class="card-img-top product-img" alt="Product Image">
+                <?php else: ?>
+                    <img src="https://via.placeholder.com/150" class="card-img-top product-img" alt="No Image">
+                <?php endif; ?>
+
+                <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($product['itemName']) ?></h5>
+                    <p class="card-text"><?= htmlspecialchars($product['description']) ?></p>
+                    <p class="card-text">
+                        <small>Stock: <?= $product['stock'] ?> | Price: ₱<?= number_format($product['unitPrice'], 2) ?></small>
+                    </p>
+
+                    <!-- Buttons -->
+                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteProduct(<?= $product['productID'] ?>)">Delete</button>
+                    <button type="button" class="btn btn-warning btn-sm" onclick='openEditModal(<?= json_encode($product) ?>)'>Edit</button>
+
+                    <?php if (!empty($product['qrFullURL'])): ?>
+                        <button type="button" class="btn btn-info btn-sm mt-2" onclick="showQRModal('<?= htmlspecialchars($product['qrFullURL']) ?>')">View QR</button>
                     <?php else: ?>
-                        <img src="https://via.placeholder.com/150" class="card-img-top product-img" alt="No Image">
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" disabled>No QR</button>
                     <?php endif; ?>
-                    <div class="card-body">
-                        <h5 class="card-title"><?= htmlspecialchars($product['itemName']) ?></h5>
-                        <p class="card-text"><?= htmlspecialchars($product['description']) ?></p>
-                        <p class="card-text"><small>Stock: <?= $product['stock'] ?> | Price: ₱<?= number_format($product['unitPrice'], 2) ?></small></p>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteProduct(<?= $product['productID'] ?>)">Delete</button>
-                        <button type="button" class="btn btn-warning btn-sm" onclick='openEditModal(<?= json_encode($product) ?>)'>Edit</button>
-                    </div>
                 </div>
             </div>
-        <?php endforeach; ?>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+
+<!-- QR Code Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrModalLabel">Product QR Code</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="qrImage" src="" alt="QR Code" class="img-fluid">
+      </div>
     </div>
+  </div>
 </div>
 
 <?php include '../modals/add_product.php'; ?>

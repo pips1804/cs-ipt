@@ -230,3 +230,26 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 });
+
+function viewQRCode(filename) {
+  const img = document.getElementById("qrCodeImage");
+  const placeholder = document.getElementById("qrCodePlaceholder");
+
+  if (filename && filename.trim() !== "") {
+    img.src = `http://localhost:5000/static/qrcodes/${filename}`;
+    img.style.display = "block";
+    placeholder.style.display = "none";
+  } else {
+    img.style.display = "none";
+    placeholder.style.display = "block";
+  }
+
+  var qrModal = new bootstrap.Modal(document.getElementById("qrCodeModal"));
+  qrModal.show();
+}
+
+function showQRModal(qrURL) {
+  document.getElementById("qrImage").src = qrURL;
+  var qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+  qrModal.show();
+}
