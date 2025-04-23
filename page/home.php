@@ -55,20 +55,18 @@ include_once("../auth/jwt-auth.php");
             margin-left: 200px;
             padding: 20px;
         }
-
-
     </style>
 </head>
 
 <body class="bg-light">
 
-            <!-- Loading Overlay -->
-    <div id="loadingOverlay">
+    <!-- Loading Overlay -->
+    <!-- <div id="loadingOverlay">
         <div class="loading-content text-center">
             <div class="spinner-border text-primary" role="status"></div>
             <p class="mt-3 fw-bold text-dark">Fetching data...</p>
         </div>
-    </div>
+    </div> -->
 
     <!-- Sidebar Navigation -->
     <div class="sidebar d-flex flex-column justify-content-between">
@@ -77,6 +75,7 @@ include_once("../auth/jwt-auth.php");
             <a href="home.php?page=products">Products</a>
             <a href="home.php?page=transactions">Transactions</a>
             <a href="home.php?page=reports">Reports</a>
+            <a href="home.php?page=qr">QR Code</a>
         </div>
         <div class="mb-3">
             <a href="../auth/jwt-auth.php?logout=true" class="logout-btn text-danger">
@@ -92,7 +91,7 @@ include_once("../auth/jwt-auth.php");
         // Dynamic page loading based on the URL parameter
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
-            $allowed_pages = ['dashboard', 'products', 'transactions', 'reports'];
+            $allowed_pages = ['dashboard', 'products', 'transactions', 'reports', 'qr'];
 
             if (in_array($page, $allowed_pages)) {
                 include("$page.php"); // Only load the allowed pages
@@ -110,6 +109,8 @@ include_once("../auth/jwt-auth.php");
     <script src="https://kit.fontawesome.com/dd50fcb824.js" crossorigin="anonymous"></script>
     <script src="../assets/script/script.js" defer></script>
     <script src="../assets/script/product.js" defer></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 </body>
 
 </html>
