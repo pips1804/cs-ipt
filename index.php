@@ -8,13 +8,72 @@
     <link rel="stylesheet" href="./assets/style.css">
     <link rel="stylesheet" href="./assets/style/bootstrap.min.css">
     <style>
-        input:focus::placeholder,
-        input:not(:placeholder-shown)::placeholder {
-            color: transparent !important;
-            /* Hide placeholder when typing */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        /* Loader Style */
+        .login-container {
+            background-color: #05445E;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 320px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+
+        .input-group {
+            background-color: #7DA0AA;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input {
+            border: none;
+            background: transparent;
+            color: #fff;
+            flex: 1;
+            outline: none;
+            padding-left: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .input-group i {
+            color: #1B1B1B;
+            font-size: 1.2rem;
+        }
+
+        .login-btn {
+            background-color: #A0F4EC;
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background-color: #76e4da;
+        }
+
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -43,61 +102,65 @@
         <span class="ms-3">Logging in...</span>
     </div>
 
-    <div class="card shadow-sm p-4" style="width: 300px;">
-        <h2 class="text-center mb-3">Login</h2>
-
+    <div class="login-container">
+        <h2>Log In</h2>
         <form method="post" action="controllers/login.php" onsubmit="savePassword()">
-            <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="floatingInput" placeholder="Email address" required name="email">
-                <label for="floatingInput">Email address</label>
+            <div class="input-group">
+                <i class="fa fa-envelope"></i>
+                <input type="email" placeholder="Email Address" name="email" required>
             </div>
-            <div class="form-floating mb-3">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" required name="password">
-                <label for="floatingPassword">Password</label>
+            <div class="input-group">
+                <i class="fa fa-lock"></i>
+                <input type="password" name="password" id="floatingPassword" placeholder="Password" required>
+                <i class="fa fa-eye-slash" onclick="togglePasswordVisibility()" style="cursor: pointer;"></i>
             </div>
-            <button type="submit" class="btn btn-primary w-100" name="login">Login</button>
+
+            <button type="submit" class="login-btn" name="login">Log in</button>
         </form>
     </div>
 
+    <script src="https://kit.fontawesome.com/dd50fcb824.js" crossorigin="anonymous"></script>
+
     <script>
-        // Save password before form submits
         function savePassword() {
             sessionStorage.setItem("password", document.getElementById("floatingPassword").value);
         }
 
-        // Restore password if available
-        window.onload = function () {
-            if (sessionStorage.getItem("password")) {
-                document.getElementById("floatingPassword").value = sessionStorage.getItem("password");
-                sessionStorage.removeItem("password"); // Clear after setting
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById("floatingPassword");
+            const icon = event.target;
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
             }
         }
 
-        document.querySelector("form").addEventListener("submit", async function (event) {
-        event.preventDefault();
+        document.querySelector("form").addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-        // Show the loading overlay
-        document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingOverlay').style.display = 'flex';
 
-        const formData = new FormData(this);
-        const response = await fetch("controllers/login.php", {
-            method: "POST",
-            body: formData,
-            credentials: "same-origin"
+            const formData = new FormData(this);
+            const response = await fetch("controllers/login.php", {
+                method: "POST",
+                body: formData,
+                credentials: "same-origin"
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                window.location.href = "page/home.php";
+            } else {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                alert("Login failed: " + data.error);
+            }
         });
-
-        const data = await response.json();
-
-        if (data.success) {
-            // Don't hide overlay — let it stay while redirecting
-            window.location.href = "page/home.php";
-        } else {
-            // Hide the overlay only if login fails
-            document.getElementById('loadingOverlay').style.display = 'none';
-            alert("Login failed: " + data.error);
-        }
-        });
-
     </script>
 
     <script src="./assets/script/bootstrap.min.js"></script>

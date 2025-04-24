@@ -16,58 +16,71 @@ $totalValue = 0;
 foreach ($products as $product) {
     $stock = (int)$product['stock'];
     $price = (float)$product['unitPrice'];
-
     $totalStock += $stock;
     $totalValue += $stock * $price;
-
     if ($stock <= 5) {
         $lowStockCount++;
     }
 }
 ?>
 
-<div class="container mt-5">
-    <h1 class="mb-4">Dashboard</h1>
+<style>
+    .dashboard-cards {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+    }
 
-    <div class="row">
-        <!-- Total Products -->
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-primary shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Total Products</h5>
-                    <p class="fs-4"><?= $totalProducts ?></p>
-                </div>
-            </div>
+    .dashboard-card {
+        background: linear-gradient(to bottom, #002e45, #004e66);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        flex: 1;
+        min-width: 200px;
+        text-align: left;
+    }
+
+    .dashboard-card h5 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .dashboard-card p {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 0;
+    }
+
+    .dashboard-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+    }
+</style>
+
+<div class="dashboard-section">
+    <h1 class="dashboard-title mb-4">Dashboard</h1>
+
+    <div class="dashboard-cards">
+        <div class="dashboard-card">
+            <h5>Total Products</h5>
+            <p><?= $totalProducts ?></p>
         </div>
-
-        <!-- Total Stock -->
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-success shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Total Stock</h5>
-                    <p class="fs-4"><?= $totalStock ?></p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5>Total Stocks</h5>
+            <p><?= $totalStock ?></p>
         </div>
-
-        <!-- Low Stock -->
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-danger shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Low Stock (≤ 5)</h5>
-                    <p class="fs-4"><?= $lowStockCount ?></p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5>Low Stocks</h5>
+            <p><?= $lowStockCount ?></p>
         </div>
-
-        <!-- Inventory Value -->
-        <div class="col-md-3 mb-3">
-            <div class="card text-white bg-secondary shadow">
-                <div class="card-body">
-                    <h5 class="card-title">Inventory Value</h5>
-                    <p class="fs-4">₱<?= number_format($totalValue, 2) ?></p>
-                </div>
-            </div>
+        <div class="dashboard-card">
+            <h5>Inventory Value</h5>
+            <p>₱<?= number_format($totalValue, 2) ?></p>
         </div>
     </div>
 </div>

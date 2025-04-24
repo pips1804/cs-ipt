@@ -1,5 +1,9 @@
 <?php
 include_once("../auth/jwt-auth.php");
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 ?>
 
 <!DOCTYPE html>
@@ -21,39 +25,57 @@ include_once("../auth/jwt-auth.php");
             bottom: 0;
             left: 0;
             width: 200px;
-            background-color: #343a40;
+            background: linear-gradient(to bottom, #00394f, #001f2d);
             color: white;
             display: flex;
             flex-direction: column;
             padding-top: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         .sidebar a {
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             display: block;
             text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-radius 0.3s;
+            border-radius: 6px 0 0 6px;
+            margin-right: 10px;
         }
 
         .sidebar a.active,
         .sidebar a:hover {
-            background-color: #495057;
+            background-color: #2b7a8b;
+            border-radius: 6px 0 0 6px;
+        }
+
+        .sidebar form {
+            margin: 0;
         }
 
         .logout-btn {
             margin-top: auto;
-            padding: 10px 20px;
-            text-align: center;
-        }
-
-        .logout-btn a {
-            color: #ffc107;
-            text-decoration: none;
-        }
-
-        .main-content {
-            margin-left: 200px;
             padding: 20px;
+            text-align: left;
+        }
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: opacity 0.2s ease-in-out;
+        }
+
+        .logout-button:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
@@ -77,10 +99,14 @@ include_once("../auth/jwt-auth.php");
             <a href="home.php?page=reports">Reports</a>
             <a href="home.php?page=qr">QR Code</a>
         </div>
-        <div class="mb-3">
-            <a href="../auth/jwt-auth.php?logout=true" class="logout-btn text-danger">
-                <i class="fa-solid fa-right-from-bracket"></i>Logout
-            </a>
+        <div class="logout-btn">
+            <form action="../auth/jwt-auth.php" method="GET">
+                <input type="hidden" name="logout" value="true">
+                <button type="submit" class="logout-button">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Logout
+                </button>
+            </form>
         </div>
     </div>
 

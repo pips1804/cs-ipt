@@ -1,57 +1,76 @@
 <?php
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 $apiUrl = "http://localhost:5000/api/products";
 $response = file_get_contents($apiUrl);
 $products = json_decode($response, true);
 ?>
 
-<div class="container mt-5">
+<div class="container-fluid mt-4">
     <h2 class="mb-4">QR CODE STOCK MANAGEMENT</h2>
 
-    <!-- Webcam Scanner -->
-    <div class="mb-4">
-        <h5>Scan QR Code</h5>
+    <div class="row">
+        <!-- Left Panel: Scanner + Drag Zone -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <!-- Scanner -->
+            <div class="mb-4 d-flex flex-column align-items-center">
+                <h5 class="text-start w-100">Scan QR Code</h5>
 
-        <div id="preview" style="width: 400px; height: 300px;"></div>
-        <div class="mt-2">
-            <button class="btn btn-success" onclick="startScanner()">Start Scanner</button>
-            <button class="btn btn-danger" onclick="stopScanner()">Stop Scanner</button>
-        </div>
-    </div>
+                <!-- Webcam Preview -->
+                <div id="preview"
+                    class="border"
+                    style="width: 100%; max-width: 400px; height: 300px; background: #eee;">
+                </div>
 
-    <!-- Drag Zone -->
-    <div class="mb-4">
-        <h5>Drag QR Code Here to Add Stock</h5>
-        <div id="dropZone"
-            class="border p-3 text-center"
-            ondrop="handleDrop(event)"
-            ondragover="event.preventDefault()">
-            Drop QR Code here
-        </div>
-    </div>
-
-    <!-- Products with QR Display -->
-    <div class="row" id="qr-product-list">
-        <?php foreach ($products as $product): ?>
-            <div class="col-md-3 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body text-center">
-                        <h6><?= htmlspecialchars($product['itemName']) ?></h6>
-                        <?php if (!empty($product['qrFullURL'])): ?>
-                            <img src="<?= $product['qrFullURL'] ?>"
-                                class="qr-draggable img-fluid"
-                                draggable="true"
-                                ondragstart="drag(event)"
-                                data-product-id="<?= $product['productID'] ?>">
-                        <?php else: ?>
-                            <p>No QR Code</p>
-                        <?php endif; ?>
-                        <p><small>Stock: <?= $product['stock'] ?></small></p>
-                    </div>
+                <!-- Buttons under the scanner -->
+                <div class="mt-3 d-flex gap-2">
+                    <button class="btn btn-success" onclick="startScanner()">Start Scanner</button>
+                    <button class="btn btn-danger" onclick="stopScanner()">Stop Scanner</button>
                 </div>
             </div>
-        <?php endforeach; ?>
+
+            <!-- Drag Zone -->
+            <div>
+                <h5>Drag QR Code Here to Add Stock</h5>
+                <div id="dropZone"
+                    class="border p-3 text-center bg-light"
+                    style="height: 150px;"
+                    ondrop="handleDrop(event)"
+                    ondragover="event.preventDefault()">
+                    Drop QR Code here
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Product List with Scroll -->
+        <div class="col-lg-8 col-md-12" style="max-height: 600px; overflow-y: auto;">
+            <div class="row" id="qr-product-list">
+                <?php foreach ($products as $product): ?>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center">
+                                <h6><?= htmlspecialchars($product['itemName']) ?></h6>
+                                <?php if (!empty($product['qrFullURL'])): ?>
+                                    <img src="<?= $product['qrFullURL'] ?>"
+                                        class="qr-draggable img-fluid"
+                                        draggable="true"
+                                        ondragstart="drag(event)"
+                                        data-product-id="<?= $product['productID'] ?>">
+                                <?php else: ?>
+                                    <p>No QR Code</p>
+                                <?php endif; ?>
+                                <p><small>Stock: <?= $product['stock'] ?></small></p>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
     </div>
 </div>
+
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>

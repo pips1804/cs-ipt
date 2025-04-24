@@ -1,4 +1,8 @@
 <?php
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
+
 $apiUrl = "http://localhost:5000/api/products";
 $response = file_get_contents($apiUrl);
 $products = json_decode($response, true);
@@ -37,18 +41,18 @@ foreach ($products as $product) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($products as $product): 
+                <?php foreach ($products as $product):
                     $stock = (int)$product['stock'];
                     $status = $stock <= 5 ? "Low" : "Sufficient";
                     $statusClass = $stock <= 5 ? "text-danger" : "text-success";
                 ?>
-                <tr>
-                    <td><?= htmlspecialchars($product['itemName']) ?></td>
-                    <td><?= htmlspecialchars($product['description']) ?></td>
-                    <td><?= $stock ?></td>
-                    <td>₱<?= number_format($product['unitPrice'], 2) ?></td>
-                    <td class="<?= $statusClass ?> fw-bold"><?= $status ?></td>
-                </tr>
+                    <tr>
+                        <td><?= htmlspecialchars($product['itemName']) ?></td>
+                        <td><?= htmlspecialchars($product['description']) ?></td>
+                        <td><?= $stock ?></td>
+                        <td>₱<?= number_format($product['unitPrice'], 2) ?></td>
+                        <td class="<?= $statusClass ?> fw-bold"><?= $status ?></td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>

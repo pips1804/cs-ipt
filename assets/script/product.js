@@ -230,3 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   };
 });
+
+function showQRModal(qrUrl) {
+  const qrImage = document.getElementById("qrImage");
+  qrImage.src = qrUrl;
+  const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+  qrModal.show();
+}
