@@ -45,7 +45,7 @@ $products = json_decode($response, true);
         </div>
 
         <!-- Right Panel: Product List with Scroll -->
-        <div class="col-lg-8 col-md-12" style="max-height: 600px; overflow-y: auto;">
+        <div class="col-lg-8 col-md-12" style="max-height: 750px; overflow-y: auto;">
             <div class="row" id="qr-product-list">
                 <?php foreach ($products as $product): ?>
                     <div class="col-sm-6 col-md-4 col-lg-3 mb-4">

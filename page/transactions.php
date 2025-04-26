@@ -4,11 +4,61 @@ header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
 ?>
 
-<h2 class="mb-4">TRANSACTIONS</h2>
+<style>
+    .table-container {
+        max-height: 800px;
+        /* you can adjust this height */
+        overflow-y: auto;
+        overflow-x: auto;
+    }
 
-<div class="table-responsive">
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #04364A, #0D5975);
+        color: white;
+        z-index: 2;
+        text-align: center;
+    }
+
+    th,
+    td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* REMOVE Bootstrap background from thead */
+    thead.custom-header th {
+        background: linear-gradient(135deg, #04364A, #0D5975);
+        color: white;
+        border-bottom: 2px solid #dee2e6;
+        text-align: center;
+    }
+
+    th,
+    td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
+<h2 class="mb-4 fw-bold text-dark">TRANSACTIONS</h2>
+
+<div class="table-container">
     <table class="table table-striped table-bordered">
-        <thead class="table-dark">
+        <thead>
             <tr>
                 <th>ID</th>
                 <th>Action</th>

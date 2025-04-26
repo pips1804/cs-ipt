@@ -1,20 +1,9 @@
-<?php
-include_once("../auth/jwt-auth.php");
-
-header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
-header("Cache-Control: post-check=0, pre-check=0", false);
-header("Pragma: no-cache");
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <title>Inventory System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../assets/style/style.css">
@@ -82,52 +71,26 @@ header("Pragma: no-cache");
 
 <body class="bg-light">
 
-    <!-- Loading Overlay -->
-    <!-- <div id="loadingOverlay">
-        <div class="loading-content text-center">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-3 fw-bold text-dark">Fetching data...</p>
-        </div>
-    </div> -->
-
     <!-- Sidebar Navigation -->
     <div class="sidebar d-flex flex-column justify-content-between">
         <div>
-            <a href="home.php?page=dashboard">Dashboard</a>
-            <a href="home.php?page=products">Products</a>
-            <a href="home.php?page=transactions">Transactions</a>
-            <a href="home.php?page=reports">Reports</a>
-            <a href="home.php?page=qr">QR Code</a>
+            <a href="#" class="sidebar-link" data-page="dashboard">Dashboard</a>
+            <a href="#" class="sidebar-link" data-page="products">Products</a>
+            <a href="#" class="sidebar-link" data-page="transactions">Transactions</a>
+            <a href="#" class="sidebar-link" data-page="reports">Reports</a>
+            <a href="#" class="sidebar-link" data-page="qr">QR Code</a>
         </div>
         <div class="logout-btn">
             <form action="../auth/jwt-auth.php" method="GET">
                 <input type="hidden" name="logout" value="true">
-                <button type="submit" class="logout-button">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    Logout
-                </button>
+                <button type="submit" class="logout-button">Logout</button>
             </form>
         </div>
     </div>
 
-
     <!-- Main Content -->
     <div class="main-content">
-        <?php
-        // Dynamic page loading based on the URL parameter
-        if (isset($_GET['page'])) {
-            $page = $_GET['page'];
-            $allowed_pages = ['dashboard', 'products', 'transactions', 'reports', 'qr'];
-
-            if (in_array($page, $allowed_pages)) {
-                include("$page.php"); // Only load the allowed pages
-            } else {
-                echo "<h2>Page Not Found</h2>";
-            }
-        } else {
-            include("dashboard.php"); // Default page
-        }
-        ?>
+        <!-- The content will be loaded dynamically here -->
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -136,6 +99,95 @@ header("Pragma: no-cache");
     <script src="../assets/script/script.js" defer></script>
     <script src="../assets/script/product.js" defer></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Initially load the dashboard page
+            loadPage("dashboard");
+
+            // Sidebar link click handler
+            $('.sidebar-link').on('click', function(e) {
+                e.preventDefault(); // Prevent default anchor click behavior
+                const page = $(this).data('page');
+                loadPage(page);
+            });
+
+            function loadPage(page) {
+                console.log('Loading page: ' + page);
+                // Show a loading message while fetching
+                $('.main-content').html('<div class="text-center">Loading...</div>');
+
+                // Use AJAX to load the page content dynamically
+                $.ajax({
+                    url: page + '.php', // Dynamically load the page from the server
+                    type: 'GET',
+                    success: function(data) {
+                        console.log('Successfully loaded: ' + page);
+                        $('.main-content').html(data); // Insert the page content into the main-content div
+                        if (page === "dashboard") {
+                            initializeChart(); // Initialize chart when the dashboard is loaded
+                        }
+                    },
+                    error: function() {
+                        console.error('Failed to load content for: ' + page);
+                        $('.main-content').html('<div class="text-center text-danger">Failed to load content</div>');
+                    }
+                });
+            }
+
+            function initializeChart() {
+                const ctx = document.getElementById('stockChart');
+                if (!ctx) return;
+
+                // Destroy existing chart if it exists
+                if (window.stockChart instanceof Chart) {
+                    window.stockChart.destroy();
+                }
+
+                // Fetch product data via AJAX
+                $.ajax({
+                    url: 'http://localhost:5000/api/products', // Your API endpoint
+                    type: 'GET',
+                    success: function(response) {
+                        const productNames = response.map(product => product.itemName);
+                        const productStocks = response.map(product => product.stock);
+
+                        const context = ctx.getContext('2d');
+                        const gradient = context.createLinearGradient(0, 0, 0, 400);
+                        gradient.addColorStop(0, '#002e45');
+                        gradient.addColorStop(1, '#004e66');
+
+                        window.stockChart = new Chart(context, {
+                            type: 'bar',
+                            data: {
+                                labels: productNames,
+                                datasets: [{
+                                    label: 'Stock per Product',
+                                    data: productStocks,
+                                    backgroundColor: gradient,
+                                    borderColor: '#002e45',
+                                    borderWidth: 1,
+                                    borderRadius: 5
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    },
+                    error: function() {
+                        console.error('Failed to fetch products.');
+                    }
+                });
+            }
+
+        });
+    </script>
 
 </body>
 

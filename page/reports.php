@@ -25,13 +25,41 @@ foreach ($products as $product) {
 }
 ?>
 
+<style>
+    .table-container {
+        max-height: 500px;
+        /* adjust height if needed */
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #04364A, #0D5975);
+        color: white;
+        z-index: 2;
+        text-align: center;
+    }
+
+    th,
+    td {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+</style>
+
 <div class="container mt-5">
-    <h2 class="mb-4">STOCK REPORTS</h2>
+    <h2 class="mb-4 fw-bold text-dark">STOCK REPORTS</h2>
 
     <!-- Detailed Table -->
-    <div class="table-responsive">
+    <div class="table-container">
         <table class="table table-bordered table-striped">
-            <thead class="table-dark">
+            <thead>
                 <tr>
                     <th>Product Name</th>
                     <th>Description</th>

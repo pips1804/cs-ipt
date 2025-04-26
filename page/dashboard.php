@@ -84,3 +84,58 @@ foreach ($products as $product) {
         </div>
     </div>
 </div>
+
+<div class="mt-5">
+    <h2 class="dashboard-title mb-3">Stock Overview</h2>
+    <canvas id="stockChart" style="max-height: 400px;"></canvas>
+</div>
+
+
+<script>
+    window.addEventListener('load', function() {
+        const ctx = document.getElementById('stockChart');
+        if (!ctx) return;
+
+        if (window.stockChart instanceof Chart) {
+            window.stockChart.destroy();
+        }
+
+        const context = ctx.getContext('2d');
+        const gradient = context.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, '#002e45');
+        gradient.addColorStop(1, '#004e66');
+
+        const productNames = <?= json_encode(array_column($products, 'itemName')) ?>;
+        const productStocks = <?= json_encode(array_column($products, 'stock')) ?>;
+
+        console.log(productNames);
+        console.log(productStocks);
+
+        if (productNames.length === 0 || productStocks.length === 0) {
+            console.error("Product data is empty.");
+            return;
+        }
+
+        window.stockChart = new Chart(context, {
+            type: 'bar',
+            data: {
+                labels: productNames,
+                datasets: [{
+                    label: 'Stock per Product',
+                    data: productStocks,
+                    backgroundColor: gradient,
+                    borderColor: '#002e45',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
