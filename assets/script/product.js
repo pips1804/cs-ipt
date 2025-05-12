@@ -199,14 +199,14 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(data.message);
         if (data.message === "Item added successfully!") {
           const logDescription = `
-                  Item Number: ${newProductData.itemNumber},
-                  Name: ${newProductData.itemName},
-                  Description: ${newProductData.description},
-                  Price: ₱${newProductData.unitPrice.toFixed(2)},
-                  Stock: ${newProductData.stock},
-                  Discount: ${newProductData.discount}%,
-                  Status: ${newProductData.status}
-              `.trim();
+            Item Number: #${newProductData.itemNumber}
+            Name: ${newProductData.itemName}
+            Description: ${newProductData.description}
+            Price: ₱${newProductData.unitPrice.toFixed(2)}
+            Stock: ${newProductData.stock}
+            Discount: ${newProductData.discount}%
+            Status: ${newProductData.status}
+          `.trim();
 
           fetch("../controllers/log_transaction.php", {
             method: "POST",
