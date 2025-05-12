@@ -1,4 +1,26 @@
 <?php
+require '../auth/verify_token.php';
+
+if (!isset($_COOKIE['jwt'])) {
+    // No token, redirect to login
+    header("Location: ../index.php");
+    exit();
+}
+
+$decodedToken = verifyJWT($_COOKIE['jwt']);
+
+if (!$decodedToken || $decodedToken['exp'] < time()) {
+    // Invalid or expired token
+    setcookie("jwt", "", time() - 3600, "/", "", false, true);
+    header("Location: ../index.php");
+    exit();
+}
+
+// Optionally access user data
+$user_id = $decodedToken['id'];
+$user_email = $decodedToken['email'];
+?>
+<?php
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");

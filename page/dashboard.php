@@ -1,4 +1,27 @@
 <?php
+require '../auth/verify_token.php';
+
+if (!isset($_COOKIE['jwt'])) {
+    // No token, redirect to login
+    header("Location: ../index.php");
+    exit();
+}
+
+$decodedToken = verifyJWT($_COOKIE['jwt']);
+
+if (!$decodedToken || $decodedToken['exp'] < time()) {
+    // Invalid or expired token
+    setcookie("jwt", "", time() - 3600, "/", "", false, true);
+    header("Location: ../index.php");
+    exit();
+}
+
+// Optionally access user data
+$user_id = $decodedToken['id'];
+$user_email = $decodedToken['email'];
+?>
+
+<?php
 $apiUrl = "http://localhost:5000/api/products";
 $response = file_get_contents($apiUrl);
 $products = json_decode($response, true);
