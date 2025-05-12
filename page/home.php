@@ -36,58 +36,62 @@ $user_email = $decodedToken['email'];
             top: 0;
             bottom: 0;
             left: 0;
-            width: 200px;
+            width: 220px;
             background: linear-gradient(to bottom, #00394f, #001f2d);
             color: white;
-            display: flex;
-            flex-direction: column;
-            padding-top: 20px;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px 15px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
         }
 
-        .sidebar a {
-            color: white;
-            padding: 12px 20px;
-            display: block;
-            text-decoration: none;
+        .sidebar-header h4 {
             font-weight: bold;
-            transition: background-color 0.3s ease, border-radius 0.3s;
-            border-radius: 6px 0 0 6px;
-            margin-right: 10px;
+            color: #00d1b2;
         }
 
-        .sidebar a.active,
-        .sidebar a:hover {
-            background-color: #2b7a8b;
-            border-radius: 6px 0 0 6px;
+        .sidebar-link {
+            color: #ffffff;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease;
         }
 
-        .sidebar form {
-            margin: 0;
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background-color: #00d1b2;
+            color: #1a1f2e;
+            font-weight: 600;
         }
 
         .logout-btn {
-            margin-top: auto;
-            padding: 20px;
-            text-align: left;
+            padding-top: 20px;
         }
 
         .logout-button {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: none;
+            width: 100%;
+            padding: 12px;
+            background: transparent;
             border: none;
             color: #ffffff;
-            font-weight: bold;
-            cursor: pointer;
+            font-weight: 500;
             font-size: 1rem;
-            text-decoration: none;
-            transition: opacity 0.2s ease-in-out;
+            border-radius: 8px;
+            transition: background 0.3s ease;
         }
 
         .logout-button:hover {
-            opacity: 0.8;
+            background: #dc3545;
+            color: white;
+        }
+
+        .main-content {
+            background-color: whitesmoke;
         }
     </style>
 </head>
@@ -95,19 +99,42 @@ $user_email = $decodedToken['email'];
 <body class="bg-light">
 
     <!-- Sidebar Navigation -->
-    <div class="sidebar d-flex flex-column justify-content-between">
-        <div>
-            <a href="#" class="sidebar-link" data-page="dashboard">Dashboard</a>
-            <a href="#" class="sidebar-link" data-page="products">Products</a>
-            <a href="#" class="sidebar-link" data-page="transactions">Transactions</a>
-            <a href="#" class="sidebar-link" data-page="reports">Reports</a>
-            <a href="#" class="sidebar-link" data-page="qr">QR Code</a>
+    <div class="sidebar d-flex flex-column">
+        <div class="sidebar-header text-center mb-4">
+            <h4>🛒 Inventory</h4>
         </div>
+        <nav class="flex-grow-1">
+            <a href="#" class="sidebar-link" data-page="dashboard"><i class="fas fa-home me-2"></i> Dashboard</a>
+            <a href="#" class="sidebar-link" data-page="products"><i class="fas fa-box-open me-2"></i> Products</a>
+            <a href="#" class="sidebar-link" data-page="transactions"><i class="fas fa-exchange-alt me-2"></i> Transactions</a>
+            <a href="#" class="sidebar-link" data-page="reports"><i class="fas fa-chart-bar me-2"></i> Reports</a>
+            <a href="#" class="sidebar-link" data-page="qr"><i class="fas fa-qrcode me-2"></i> QR Code</a>
+        </nav>
         <div class="logout-btn">
-            <form action="../auth/jwt-auth.php" method="GET">
-                <input type="hidden" name="logout" value="true">
-                <button type="submit" class="logout-button">Logout</button>
-            </form>
+            <button type="button" class="logout-button" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                <i class="fas fa-sign-out-alt me-2"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="../auth/jwt-auth.php" method="GET">
+                        <input type="hidden" name="logout" value="true">
+                        <button type="submit" class="btn btn-danger">Yes, Logout</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -126,20 +153,29 @@ $user_email = $decodedToken['email'];
 
     <script>
         $(document).ready(function() {
-            // Initially load the dashboard page
-            loadPage("dashboard");
+            // Load the last visited page or default to 'dashboard'
+            const lastPage = localStorage.getItem('lastPage') || 'dashboard';
+            loadPage(lastPage);
 
             // Sidebar link click handler
             $('.sidebar-link').on('click', function(e) {
-                e.preventDefault(); // Prevent default anchor click behavior
+                e.preventDefault();
                 const page = $(this).data('page');
+                localStorage.setItem('lastPage', page); // Save selected page
                 loadPage(page);
             });
 
             function loadPage(page) {
                 console.log('Loading page: ' + page);
                 // Show a loading message while fetching
-                $('.main-content').html('<div class="text-center">Loading...</div>');
+                $('.main-content').html(`
+        <div class="d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="mt-3 text-primary">Loading content...</div>
+        </div>
+    `);
 
                 // Use AJAX to load the page content dynamically
                 $.ajax({

@@ -73,10 +73,16 @@ foreach ($products as $product) {
     .table-striped tbody tr:nth-of-type(odd) {
         background-color: rgba(0, 0, 0, 0.05);
     }
+
+    .dashboard-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #333;
+    }
 </style>
 
 <div class="container mt-5">
-    <h2 class="mb-4 fw-bold text-dark">STOCK REPORTS</h2>
+    <h2 class="mb-4 fw-bold text-dark text-center dashboard-title">Stock Reports</h2>
 
     <!-- Detailed Table -->
     <div class="table-container">

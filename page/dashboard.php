@@ -79,14 +79,15 @@ foreach ($products as $product) {
     }
 
     .dashboard-title {
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: 700;
         color: #333;
     }
 </style>
 
 <div class="dashboard-section">
-    <h1 class="dashboard-title mb-4">Dashboard</h1>
+    <h1 class="dashboard-title mb-4 mt-5 text-center">Dashboard</h1>
+
 
     <div class="dashboard-cards">
         <div class="dashboard-card">
@@ -109,7 +110,7 @@ foreach ($products as $product) {
 </div>
 
 <div class="mt-5">
-    <h2 class="dashboard-title mb-3">Stock Overview</h2>
+    <h2 class="dashboard-title mb-3 text-center">Stock Overview</h2>
     <canvas id="stockChart" style="max-height: 400px;"></canvas>
 </div>
 

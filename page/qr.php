@@ -31,8 +31,16 @@ $response = file_get_contents($apiUrl);
 $products = json_decode($response, true);
 ?>
 
-<div class="container-fluid mt-4">
-    <h2 class="mb-4">QR CODE STOCK MANAGEMENT</h2>
+<style>
+    .dashboard-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #333;
+    }
+</style>
+
+<div class="container-fluid mb-2 mt-3">
+    <h2 class="mb-4 text-center dashboard-title">QR Code Stock Management</h2>
 
     <div class="row">
         <!-- Left Panel: Scanner + Drag Zone -->

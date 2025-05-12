@@ -40,7 +40,8 @@ header("Pragma: no-cache");
         text-align: center;
     }
 
-    th, td {
+    th,
+    td {
         vertical-align: middle;
         white-space: nowrap;
     }
@@ -56,9 +57,15 @@ header("Pragma: no-cache");
     .valid-transaction {
         background-color: #d4edda !important;
     }
+
+    .dashboard-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #333;
+    }
 </style>
 
-<h2 class="mb-4 fw-bold text-dark">TRANSACTIONS</h2>
+<h2 class="mb-4 fw-bold text-dark text-center dashboard-title">Transactions</h2>
 
 <div class="table-container">
     <table class="table table-striped table-bordered">
@@ -79,14 +86,14 @@ header("Pragma: no-cache");
 </div>
 
 <script>
-fetch('../controllers/view_transaction.php?action=get_all')
-    .then(res => res.json())
-    .then(data => {
-        const tbody = document.getElementById('transactionsBody');
+    fetch('../controllers/view_transaction.php?action=get_all')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('transactionsBody');
 
-        if (data.success && data.transactions.length > 0) {
-            data.transactions.forEach(tx => {
-                const row = `
+            if (data.success && data.transactions.length > 0) {
+                data.transactions.forEach(tx => {
+                    const row = `
                     <tr data-id="${tx.id}">
                         <td>${tx.action}</td>
                         <td>${tx.description}</td>
@@ -111,74 +118,74 @@ fetch('../controllers/view_transaction.php?action=get_all')
                         </td>
                     </tr>
                 `;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-
-            document.querySelectorAll('.toggle-hash').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const span = this.parentElement.querySelector('.tx-hash');
-                    if (span.style.display === 'none') {
-                        span.style.display = 'inline';
-                        this.textContent = 'Hide';
-                    } else {
-                        span.style.display = 'none';
-                        this.textContent = 'Show';
-                    }
+                    tbody.insertAdjacentHTML('beforeend', row);
                 });
-            });
 
-            document.querySelectorAll('.copy-hash').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const span = this.parentElement.querySelector('.tx-hash');
-                    navigator.clipboard.writeText(span.textContent).then(() => {
-                        alert('TX Hash copied to clipboard!');
+                document.querySelectorAll('.toggle-hash').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const span = this.parentElement.querySelector('.tx-hash');
+                        if (span.style.display === 'none') {
+                            span.style.display = 'inline';
+                            this.textContent = 'Hide';
+                        } else {
+                            span.style.display = 'none';
+                            this.textContent = 'Show';
+                        }
                     });
                 });
-            });
 
-            document.querySelectorAll('.verify-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const row = this.closest('tr');
-                    row.classList.remove('valid-transaction', 'invalid-transaction');
-
-                    const payload = {
-                        user: this.dataset.user,
-                        action: this.dataset.action,
-                        description: this.dataset.description,
-                        timestamp: this.dataset.timestamp,
-                        tx_hash: this.dataset.tx_hash
-                    };
-
-                    fetch('../controllers/verify_transaction.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                        .then(res => res.json())
-                        .then(result => {
-                            if (result.match) {
-                                row.classList.add('valid-transaction');
-                                alert('✅ Transaction is valid!');
-                            } else {
-                                row.classList.add('invalid-transaction');
-                                alert('❌ Transaction is invalid!\nExpected: ' + result.recomputed_hash + '\nStored: ' + result.stored_hash);
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Verification error:', err);
-                            alert('❌ Error verifying transaction.');
+                document.querySelectorAll('.copy-hash').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const span = this.parentElement.querySelector('.tx-hash');
+                        navigator.clipboard.writeText(span.textContent).then(() => {
+                            alert('TX Hash copied to clipboard!');
                         });
+                    });
                 });
-            });
-        } else {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center">No transactions found.</td></tr>`;
-        }
-    })
-    .catch(err => {
-        console.error('Failed to fetch transactions:', err);
-        document.getElementById('transactionsBody').innerHTML =
-            '<tr><td colspan="6" class="text-center text-danger">Error loading transactions</td></tr>';
-    });
+
+                document.querySelectorAll('.verify-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const row = this.closest('tr');
+                        row.classList.remove('valid-transaction', 'invalid-transaction');
+
+                        const payload = {
+                            user: this.dataset.user,
+                            action: this.dataset.action,
+                            description: this.dataset.description,
+                            timestamp: this.dataset.timestamp,
+                            tx_hash: this.dataset.tx_hash
+                        };
+
+                        fetch('../controllers/verify_transaction.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            })
+                            .then(res => res.json())
+                            .then(result => {
+                                if (result.match) {
+                                    row.classList.add('valid-transaction');
+                                    alert('✅ Transaction is valid!');
+                                } else {
+                                    row.classList.add('invalid-transaction');
+                                    alert('❌ Transaction is invalid!\nExpected: ' + result.recomputed_hash + '\nStored: ' + result.stored_hash);
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Verification error:', err);
+                                alert('❌ Error verifying transaction.');
+                            });
+                    });
+                });
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center">No transactions found.</td></tr>`;
+            }
+        })
+        .catch(err => {
+            console.error('Failed to fetch transactions:', err);
+            document.getElementById('transactionsBody').innerHTML =
+                '<tr><td colspan="6" class="text-center text-danger">Error loading transactions</td></tr>';
+        });
 </script>
